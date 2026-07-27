@@ -74,11 +74,18 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Bundle Web / App Assets
+      - name: Create Metro assets directory
+        run: mkdir -p android/app/src/main/assets
+
+      - name: Bundle React Native JS (Metro bundler → index.android.bundle)
         run: |
-          npm run build || node scripts/build.js
-          mkdir -p android/app/src/main/assets
-          cp -r dist/* android/app/src/main/assets/
+          npx react-native bundle \
+            --platform android \
+            --dev false \
+            --entry-file index.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res \
+            --reset-cache
 
       - name: Setup Gradle Wrapper
         run: |
@@ -115,6 +122,7 @@ jobs:
       - name: Summary Report
         run: |
           echo "### 🚀 Build Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Status:** Success" >> $GITHUB_STEP_SUMMARY
-          echo "- **Hermes Engine:** Enabled" >> $GITHUB_STEP_SUMMARY
-          echo "- **Artifacts:** Debug & Release APKs generated successfully." >> $GITHUB_STEP_SUMMARY
+          echo "- **Bundle:** index.android.bundle via Metro" >> $GITHUB_STEP_SUMMARY
+          echo "- **JS Engine:** Hermes (native)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Architecture:** ReactActivity + ReactNativeHost (no WebView)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Artifacts:** Debug & Release APKs" >> $GITHUB_STEP_SUMMARY
