@@ -186,7 +186,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             </View>
             <Switch
               value={settings.pinLockEnabled}
-              onValueChange={val => {
+              onValueChange={(val: boolean) => {
                 if (val) {
                   setShowPinModal(true);
                 } else {
@@ -226,7 +226,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             </View>
             <Switch
               value={settings.localEncryption}
-              onValueChange={val => updateSettings({ localEncryption: val })}
+              onValueChange={(val: boolean) => updateSettings({ localEncryption: val })}
               trackColor={{ false: themeColors.badgeBg, true: accentColor }}
             />
           </View>

@@ -137,7 +137,7 @@ export const FoldersScreen: React.FC<FoldersScreenProps> = ({
 
                   <TouchableOpacity
                     style={styles.deleteFolderBtn}
-                    onPress={e => {
+                    onPress={(e: any) => {
                       e.stopPropagation();
                       onDeleteFolder(folder.id);
                     }}
