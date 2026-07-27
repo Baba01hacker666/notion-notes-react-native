@@ -74,6 +74,12 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Bundle Web / App Assets
+        run: |
+          npm run build || node scripts/build.js
+          mkdir -p android/app/src/main/assets
+          cp -r dist/* android/app/src/main/assets/
+
       - name: Setup Gradle Wrapper
         run: |
           cd android
