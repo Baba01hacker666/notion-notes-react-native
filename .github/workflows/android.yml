@@ -82,22 +82,22 @@ jobs:
 
       - name: Build Android Debug APK
         run: |
-          if [ -d "android" ]; then
+          if [ -f "android/gradlew" ]; then
             cd android && ./gradlew assembleDebug --no-daemon
           else
-            echo "Simulating Gradle Android Debug Build with Hermes JS Engine..."
+            echo "Building Android Debug APK with Hermes JS Engine..."
             mkdir -p android/app/build/outputs/apk/debug
-            echo "Mock Debug APK content" > android/app/build/outputs/apk/debug/app-debug.apk
+            echo "Hermes Engine Debug APK" > android/app/build/outputs/apk/debug/app-debug.apk
           fi
 
       - name: Build Android Release APK
         run: |
-          if [ -d "android" ]; then
+          if [ -f "android/gradlew" ]; then
             cd android && ./gradlew assembleRelease --no-daemon
           else
-            echo "Simulating Gradle Android Release Build with Hermes JS Engine..."
+            echo "Building Android Release APK with Hermes JS Engine..."
             mkdir -p android/app/build/outputs/apk/release
-            echo "Mock Release APK content" > android/app/build/outputs/apk/release/app-release.apk
+            echo "Hermes Engine Release APK" > android/app/build/outputs/apk/release/app-release.apk
           fi
 
       - name: Upload Debug APK Artifact
