@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Plus, PenTool, Mic, CheckSquare, FolderPlus, X } from 'lucide-react';
+import { Plus, PenTool, CheckSquare, FolderPlus, X } from 'lucide-react';
 import { ThemeColors } from '../../theme/colors';
 import { HapticsService } from '../../services/HapticsService';
 
@@ -16,7 +16,7 @@ interface FABProps {
 export const FAB: React.FC<FABProps> = ({
   themeColors,
   accentColor,
-  onCreateNote,
+  onCreateNote: _onCreateNote,
   onCreateChecklistNote,
   onCreateDrawingNote,
   onCreateFolder,

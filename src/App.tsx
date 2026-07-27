@@ -24,7 +24,6 @@ export default function App() {
     folders,
     tags,
     activeNote,
-    activeNoteId,
     setActiveNoteId,
     searchQuery,
     setSearchQuery,
@@ -61,20 +60,20 @@ export default function App() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(settings.defaultView);
 
   const handleCreateNote = () => {
-    const newNote = createNote();
+    createNote();
     setActiveScreen('editor');
   };
 
   const handleCreateChecklistNote = () => {
-    const newNote = createNote(null, 'Task Checklist');
-    updateNote(newNote.id, {
+    const note = createNote(null, 'Task Checklist');
+    updateNote(note.id, {
       content: `# Task Checklist\n\n- [ ] First task\n- [ ] Second task\n- [ ] Third task`,
     });
     setActiveScreen('editor');
   };
 
   const handleCreateDrawingNote = () => {
-    const newNote = createNote(null, 'Drawing Note');
+    createNote(null, 'Drawing Note');
     setActiveScreen('editor');
   };
 

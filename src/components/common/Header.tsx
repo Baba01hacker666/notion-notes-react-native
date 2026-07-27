@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import { Search as SearchIcon, Sparkles as SparklesIcon, Folder as FolderIcon, ShieldCheck as ShieldIcon, Sun as SunIcon, Moon as MoonIcon, Grid as GridIcon, List as ListIcon } from 'lucide-react';
+import { Search as SearchIcon, Sparkles as SparklesIcon, Folder as FolderIcon, ShieldCheck as ShieldIcon, Sun as SunIcon, Grid as GridIcon, List as ListIcon } from 'lucide-react';
 import { ThemeColors } from '../../theme/colors';
-import { ActiveScreen, SmartFilterType } from '../../types';
+import { ActiveScreen } from '../../types';
 
 interface HeaderProps {
   themeColors: ThemeColors;

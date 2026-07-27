@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import { View, StyleSheet, DimensionValue } from 'react-native';
 import { ThemeColors } from '../../theme/colors';
 
 interface SkeletonProps {
@@ -7,7 +7,7 @@ interface SkeletonProps {
   width?: number | string;
   height?: number;
   borderRadius?: number;
-  style?: any;
+  style?: object;
 }
 
 export const Skeleton: React.FC<SkeletonProps> = ({
@@ -22,7 +22,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
       style={[
         styles.skeleton,
         {
-          width: width as any,
+          width: width as DimensionValue,
           height,
           borderRadius,
           backgroundColor: themeColors.badgeBg,

@@ -68,7 +68,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
         <View style={styles.headerIcons}>
           <TouchableOpacity
             style={styles.iconBtn}
-            onPress={e => {
+            onPress={(e: any) => {
               e.stopPropagation();
               onToggleFavorite();
             }}
@@ -82,7 +82,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
 
           <TouchableOpacity
             style={styles.iconBtn}
-            onPress={e => {
+            onPress={(e: any) => {
               e.stopPropagation();
               onTogglePin();
             }}
@@ -137,7 +137,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
             <>
               <TouchableOpacity
                 style={styles.actionBtn}
-                onPress={e => {
+                onPress={(e: any) => {
                   e.stopPropagation();
                   onToggleTrash();
                 }}
@@ -147,7 +147,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
               {onDeletePermanently && (
                 <TouchableOpacity
                   style={styles.actionBtn}
-                  onPress={e => {
+                  onPress={(e: any) => {
                     e.stopPropagation();
                     onDeletePermanently();
                   }}
@@ -160,7 +160,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
             <>
               <TouchableOpacity
                 style={styles.actionBtn}
-                onPress={e => {
+                onPress={(e: any) => {
                   e.stopPropagation();
                   onToggleArchive();
                 }}
@@ -169,7 +169,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.actionBtn}
-                onPress={e => {
+                onPress={(e: any) => {
                   e.stopPropagation();
                   onToggleTrash();
                 }}
