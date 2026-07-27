@@ -21,6 +21,7 @@ import {
   Download,
   Heart,
   Pin,
+  Archive,
 } from 'lucide-react';
 import { Note, Folder, Tag } from '../../types';
 import { ThemeColors } from '../../theme/colors';
@@ -40,6 +41,7 @@ interface RichMarkdownEditorProps {
   onUpdateNote: (id: string, updates: Partial<Note>) => void;
   onTogglePin: (id: string) => void;
   onToggleFavorite: (id: string) => void;
+  onToggleArchive: (id: string) => void;
   onToggleTrash: (id: string) => void;
 }
 
@@ -53,6 +55,7 @@ export const RichMarkdownEditor: React.FC<RichMarkdownEditorProps> = ({
   onUpdateNote,
   onTogglePin,
   onToggleFavorite,
+  onToggleArchive,
   onToggleTrash: _onToggleTrash,
 }) => {
   const [title, setTitle] = useState(note.title);
@@ -137,6 +140,13 @@ export const RichMarkdownEditor: React.FC<RichMarkdownEditorProps> = ({
               size={18}
               color={note.isPinned ? accentColor : themeColors.textMuted}
               fill={note.isPinned ? accentColor : 'transparent'}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => onToggleArchive(note.id)} style={styles.actionIconBtn}>
+            <Archive
+              size={18}
+              color={note.isArchived ? accentColor : themeColors.textMuted}
             />
           </TouchableOpacity>
 

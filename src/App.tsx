@@ -147,6 +147,7 @@ export default function App() {
               onUpdateNote={updateNote}
               onTogglePin={togglePinNote}
               onToggleFavorite={toggleFavoriteNote}
+              onToggleArchive={toggleArchiveNote}
               onToggleTrash={toggleTrashNote}
             />
           )}

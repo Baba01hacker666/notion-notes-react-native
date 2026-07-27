@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { Sparkles, FileText, Pin, Heart, Archive, Trash2, Plus, FolderPlus, Folder } from 'lucide-react';
+import { FileText, Pin, Trash2, Plus, Folder } from 'lucide-react';
 import { Note, Folder as FolderType, SmartFilterType, ActiveScreen } from '../types';
 import { ThemeColors } from '../theme/colors';
 import { NoteCard } from '../components/notes/NoteCard';
@@ -53,7 +53,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onToggleTrash,
   onDeletePermanently,
   onEmptyTrash,
-  setActiveScreen,
+  setActiveScreen: _setActiveScreen,
   isLoading = false,
 }) => {
   const counts: Record<SmartFilterType, number> = {
@@ -126,11 +126,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 ? 'No archived notes'
                 : activeFilter === 'favorites'
                 ? 'No favorite notes'
+                : activeFilter === 'pinned'
+                ? 'No pinned notes'
                 : 'No notes found'}
             </Text>
             <Text style={[styles.emptyStateSubtitle, { color: themeColors.textMuted }]}>
               {activeFilter === 'trash'
                 ? 'Deleted notes will appear here.'
+                : activeFilter === 'archived'
+                ? 'Notes you archive will appear here.'
+                : activeFilter === 'favorites'
+                ? 'Heart notes to add them to your favorites.'
+                : activeFilter === 'pinned'
+                ? 'Pin important notes to access them quickly.'
                 : 'Create your first note to capture ideas, code snippets, or checklists.'}
             </Text>
             {activeFilter === 'all' && (
@@ -146,47 +154,71 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </View>
         ) : (
           <>
-            {/* Pinned Section */}
-            {pinnedNotes.length > 0 && activeFilter === 'all' && !selectedFolderId && (
-              <View style={styles.sectionHeader}>
-                <View style={styles.sectionTitleRow}>
-                  <Pin size={14} color={accentColor} fill={accentColor} />
-                  <Text style={[styles.sectionTitle, { color: themeColors.textMuted }]}>PINNED NOTES</Text>
-                </View>
+            {/* When viewing 'All Notes' dashboard, organize into PINNED and OTHERS */}
+            {activeFilter === 'all' && !selectedFolderId ? (
+              <>
+                {/* Pinned Section */}
+                {pinnedNotes.length > 0 && (
+                  <View style={styles.sectionHeader}>
+                    <View style={styles.sectionTitleRow}>
+                      <Pin size={14} color={accentColor} fill={accentColor} />
+                      <Text style={[styles.sectionTitle, { color: themeColors.textMuted }]}>PINNED NOTES</Text>
+                    </View>
 
-                <View style={viewMode === 'grid' ? styles.gridContainer : styles.listContainer}>
-                  {pinnedNotes.map(note => (
-                    <NoteCard
-                      key={note.id}
-                      note={note}
-                      folder={folders.find(f => f.id === note.folderId)}
-                      themeColors={themeColors}
-                      accentColor={accentColor}
-                      viewMode={viewMode}
-                      onPress={() => onSelectNote(note)}
-                      onTogglePin={() => onTogglePin(note.id)}
-                      onToggleFavorite={() => onToggleFavorite(note.id)}
-                      onToggleArchive={() => onToggleArchive(note.id)}
-                      onToggleTrash={() => onToggleTrash(note.id)}
-                      onDeletePermanently={() => onDeletePermanently(note.id)}
-                    />
-                  ))}
-                </View>
-              </View>
-            )}
-
-            {/* Other Notes Section */}
-            {otherNotes.length > 0 && (
-              <View style={styles.sectionHeader}>
-                {pinnedNotes.length > 0 && activeFilter === 'all' && !selectedFolderId && (
-                  <Text style={[styles.sectionTitle, { color: themeColors.textMuted, marginTop: 8 }]}>OTHERS</Text>
+                    <View style={viewMode === 'grid' ? styles.gridContainer : styles.listContainer}>
+                      {pinnedNotes.map(note => (
+                        <NoteCard
+                          key={note.id}
+                          note={note}
+                          folder={folders.find(f => f.id === note.folderId)}
+                          themeColors={themeColors}
+                          accentColor={accentColor}
+                          viewMode={viewMode}
+                          onPress={() => onSelectNote(note)}
+                          onTogglePin={() => onTogglePin(note.id)}
+                          onToggleFavorite={() => onToggleFavorite(note.id)}
+                          onToggleArchive={() => onToggleArchive(note.id)}
+                          onToggleTrash={() => onToggleTrash(note.id)}
+                          onDeletePermanently={() => onDeletePermanently(note.id)}
+                        />
+                      ))}
+                    </View>
+                  </View>
                 )}
 
+                {/* Other Notes Section */}
+                {otherNotes.length > 0 && (
+                  <View style={styles.sectionHeader}>
+                    {pinnedNotes.length > 0 && (
+                      <Text style={[styles.sectionTitle, { color: themeColors.textMuted, marginTop: 8 }]}>OTHERS</Text>
+                    )}
+
+                    <View style={viewMode === 'grid' ? styles.gridContainer : styles.listContainer}>
+                      {otherNotes.map(note => (
+                        <NoteCard
+                          key={note.id}
+                          note={note}
+                          folder={folders.find(f => f.id === note.folderId)}
+                          themeColors={themeColors}
+                          accentColor={accentColor}
+                          viewMode={viewMode}
+                          onPress={() => onSelectNote(note)}
+                          onTogglePin={() => onTogglePin(note.id)}
+                          onToggleFavorite={() => onToggleFavorite(note.id)}
+                          onToggleArchive={() => onToggleArchive(note.id)}
+                          onToggleTrash={() => onToggleTrash(note.id)}
+                          onDeletePermanently={() => onDeletePermanently(note.id)}
+                        />
+                      ))}
+                    </View>
+                  </View>
+                )}
+              </>
+            ) : (
+              /* When filtering by Favorites, Pinned, Archived, Trash, or Folder, show ALL matching notes */
+              <View style={styles.sectionHeader}>
                 <View style={viewMode === 'grid' ? styles.gridContainer : styles.listContainer}>
-                  {(pinnedNotes.length > 0 && activeFilter === 'all' && !selectedFolderId
-                    ? otherNotes
-                    : filteredNotes
-                  ).map(note => (
+                  {filteredNotes.map(note => (
                     <NoteCard
                       key={note.id}
                       note={note}
