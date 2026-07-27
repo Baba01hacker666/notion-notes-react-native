@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
-import { Folder, FolderPlus, ChevronRight, Trash2, ArrowLeft, Plus, ChevronDown } from 'lucide-react';
+import { Folder, FolderPlus, ChevronRight, Trash2, ArrowLeft } from 'lucide-react';
 import { Folder as FolderType, Note, ActiveScreen } from '../types';
 import { ThemeColors } from '../theme/colors';
 import { HapticsService } from '../services/HapticsService';

@@ -5,15 +5,9 @@ import {
   Shield,
   Download,
   Upload,
-  Info,
   ArrowLeft,
   Check,
-  Lock,
-  Smartphone,
   Cpu,
-  Type,
-  KeyRound,
-  FileJson,
 } from 'lucide-react';
 import { AppThemeMode, AccentColorKey, UserSettings, ActiveScreen, Note } from '../types';
 import { THEMES, ACCENT_PALETTES, ThemeColors } from '../theme/colors';

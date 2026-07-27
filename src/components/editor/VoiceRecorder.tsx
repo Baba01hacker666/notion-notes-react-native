@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Mic, Square, Play, Pause, Trash2, Check, Volume2 } from 'lucide-react';
+import { Mic, Square, Play, Pause, Trash2, Check } from 'lucide-react';
 import { ThemeColors } from '../../theme/colors';
 import { HapticsService } from '../../services/HapticsService';
 

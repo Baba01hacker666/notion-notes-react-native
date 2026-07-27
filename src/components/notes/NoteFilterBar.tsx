@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { Sparkles, Heart, Pin, Archive, Trash2, Clock } from 'lucide-react';
+import { Sparkles, Heart, Pin, Archive, Trash2 } from 'lucide-react';
 import { SmartFilterType } from '../../types';
 import { ThemeColors } from '../../theme/colors';
 
