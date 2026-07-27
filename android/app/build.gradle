@@ -33,9 +33,9 @@ android {
 }
 
 dependencies {
-    // React Native core (AAR from local node_modules)
-    implementation("com.facebook.react:react-android")
-    implementation("com.facebook.react:hermes-android")
+    // React Native core & Hermes engine with explicit version matching package.json react-native version
+    implementation("com.facebook.react:react-android:0.73.6")
+    implementation("com.facebook.react:hermes-android:0.73.6")
 
     // AndroidX
     implementation("androidx.appcompat:appcompat:1.6.1")
