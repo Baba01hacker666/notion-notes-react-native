@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { PenTool, Eraser, RotateCcw, Check, X } from 'lucide-react';
 import { ThemeColors } from '../../theme/colors';
 
@@ -103,17 +103,34 @@ export const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
       </View>
 
       <View style={styles.canvasWrapper}>
-        <canvas
-          ref={canvasRef}
-          onMouseDown={startDrawing}
-          onMouseMove={draw}
-          onMouseUp={stopDrawing}
-          onMouseLeave={stopDrawing}
-          onTouchStart={startDrawing}
-          onTouchMove={draw}
-          onTouchEnd={stopDrawing}
-          style={{ width: '100%', height: 300, cursor: 'crosshair', borderRadius: 8 }}
-        />
+        {Platform.OS === 'web' ? (
+          <canvas
+            ref={canvasRef}
+            onMouseDown={startDrawing}
+            onMouseMove={draw}
+            onMouseUp={stopDrawing}
+            onMouseLeave={stopDrawing}
+            onTouchStart={startDrawing}
+            onTouchMove={draw}
+            onTouchEnd={stopDrawing}
+            style={{ width: '100%', height: 300, cursor: 'crosshair', borderRadius: 8 }}
+          />
+        ) : (
+          <View
+            style={{
+              width: '100%',
+              height: 300,
+              borderRadius: 8,
+              backgroundColor: themeColors.card,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text style={{ color: themeColors.textMuted, fontSize: 14 }}>
+              Drawing Canvas Ready
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Drawing Toolbar */}

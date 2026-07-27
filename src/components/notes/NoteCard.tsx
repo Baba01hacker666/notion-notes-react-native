@@ -109,7 +109,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
       ) : null}
 
       {/* Tag Badges */}
-      {note.tags && note.tags.length > 0 && (
+      {Boolean(note.tags && note.tags.length > 0) && (
         <View style={styles.tagsRow}>
           {note.tags.slice(0, 3).map((tag, idx) => (
             <View key={idx} style={[styles.tagChip, { backgroundColor: accentColor + '18' }]}>

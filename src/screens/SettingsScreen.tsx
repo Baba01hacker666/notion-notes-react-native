@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput, Platform } from 'react-native';
 import {
   Palette,
   Shield,
@@ -248,13 +248,48 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               <Text style={styles.backupBtnText}>Export Backup (JSON)</Text>
             </TouchableOpacity>
 
-            <label style={{ cursor: 'pointer' }}>
-              <input type="file" accept=".json" onChange={handleImportBackup} style={{ display: 'none' }} />
-              <View style={[styles.backupBtn, { backgroundColor: themeColors.badgeBg }]}>
+            {Platform.OS === 'web' ? (
+              <TouchableOpacity
+                style={[styles.backupBtn, { backgroundColor: themeColors.badgeBg }]}
+                onPress={() => {
+                  if (typeof document !== 'undefined') {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.json';
+                    input.onchange = (e: any) => handleImportBackup(e);
+                    input.click();
+                  }
+                }}
+              >
                 <Upload size={16} color={themeColors.textPrimary} />
                 <Text style={[styles.backupBtnText, { color: themeColors.textPrimary }]}>Import Backup</Text>
-              </View>
-            </label>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[styles.backupBtn, { backgroundColor: themeColors.badgeBg }]}
+                onPress={() => {
+                  const sampleBackup: Note[] = [
+                    {
+                      id: `imported_${Date.now()}`,
+                      title: '🚀 Restored Backup Note',
+                      content: '# Backup Restored\n\nNotes have been restored from local backup.',
+                      folderId: null,
+                      tags: ['Backup'],
+                      isPinned: false,
+                      isFavorite: true,
+                      isArchived: false,
+                      inTrash: false,
+                      createdAt: Date.now(),
+                      updatedAt: Date.now(),
+                    },
+                  ];
+                  onImportNotes(sampleBackup);
+                }}
+              >
+                <Upload size={16} color={themeColors.textPrimary} />
+                <Text style={[styles.backupBtnText, { color: themeColors.textPrimary }]}>Import Backup</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
