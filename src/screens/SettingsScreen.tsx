@@ -275,6 +275,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                       inTrash: false,
                       createdAt: Date.now(),
                       updatedAt: Date.now(),
+                      wordCount: 8,
+                      characterCount: 65,
+                      readingTimeMinutes: 1,
                     },
                   ];
                   onImportNotes(sampleBackup);
