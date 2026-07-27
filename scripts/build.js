@@ -1,10 +1,15 @@
 const esbuild = require('esbuild-wasm');
+const fs = require('fs');
 const path = require('path');
 
 async function build() {
   await esbuild.initialize({});
   
-  const result = await esbuild.build({
+  if (!fs.existsSync('dist')) {
+    fs.mkdirSync('dist', { recursive: true });
+  }
+
+  await esbuild.build({
     entryPoints: ['src/index.tsx'],
     bundle: true,
     outfile: 'dist/bundle.js',
@@ -26,7 +31,6 @@ async function build() {
       {
         name: 'react-native-web-resolver',
         setup(build) {
-          // Resolve missing vendor files or internal css-in-js-utils
           build.onResolve({ filter: /Animated$/ }, args => {
             if (args.path.includes('vendor/react-native/Animated/Animated')) {
               return { path: require.resolve('react-native-web/dist/exports/Animated') };
@@ -44,7 +48,12 @@ async function build() {
     ],
   });
 
-  console.log('Build completed successfully!');
+  // Generate dist/index.html with bundle.js reference
+  let html = fs.readFileSync('index.html', 'utf8');
+  html = html.replace('<script type="module" src="/src/index.tsx"></script>', '<script src="bundle.js"></script>');
+  fs.writeFileSync('dist/index.html', html);
+
+  console.log('Build completed successfully! dist/index.html and dist/bundle.js generated.');
 }
 
 build().catch(err => {
