@@ -19,7 +19,7 @@ export const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [strokeColor, setStrokeColor] = useState(accentColor);
-  const [strokeWidth, setStrokeWidth] = useState(3);
+  const [strokeWidth, _setStrokeWidth] = useState(3);
   const [mode, setMode] = useState<'pen' | 'eraser'>('pen');
 
   useEffect(() => {

@@ -12,7 +12,6 @@ import {
   Image as ImageIcon,
   PenTool,
   Mic,
-  Share2,
   Eye,
   Edit3,
   Folder as FolderIcon,
@@ -20,7 +19,6 @@ import {
   Sparkles,
   FileText,
   Download,
-  Trash2,
   Heart,
   Pin,
 } from 'lucide-react';
@@ -48,14 +46,14 @@ interface RichMarkdownEditorProps {
 export const RichMarkdownEditor: React.FC<RichMarkdownEditorProps> = ({
   note,
   folders,
-  tags,
+  tags: _tags,
   themeColors,
   accentColor,
   onBack,
   onUpdateNote,
   onTogglePin,
   onToggleFavorite,
-  onToggleTrash,
+  onToggleTrash: _onToggleTrash,
 }) => {
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content);
