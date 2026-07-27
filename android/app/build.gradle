@@ -1,8 +1,5 @@
 apply plugin: "com.android.application"
 
-// React Native build integration
-apply from: "../../node_modules/react-native/react.gradle"
-
 android {
     ndkVersion rootProject.ext.ndkVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -36,7 +33,7 @@ android {
 }
 
 dependencies {
-    // React Native core
+    // React Native core (AAR from local node_modules)
     implementation("com.facebook.react:react-android")
     implementation("com.facebook.react:hermes-android")
 

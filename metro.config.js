@@ -1,6 +1,13 @@
-const { getDefaultConfig } = require('expo/metro-config');
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 
-const defaultConfig = getDefaultConfig(__dirname);
-defaultConfig.resolver.assetExts.push('db', 'mp3', 'wav', 'png', 'jpg');
+/**
+ * Metro configuration
+ * https://reactnative.dev/docs/metro
+ */
+const config = {
+  resolver: {
+    assetExts: ['db', 'mp3', 'wav', 'png', 'jpg', 'ttf', 'otf'],
+  },
+};
 
-module.exports = defaultConfig;
+module.exports = mergeConfig(getDefaultConfig(__dirname), config);
