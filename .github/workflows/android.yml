@@ -87,6 +87,20 @@ jobs:
             --assets-dest android/app/src/main/res \
             --reset-cache
 
+      - name: Compile JS Bundle to Hermes Bytecode (HBC Binary Format)
+        run: |
+          HERMESC_BIN=$(find node_modules -name "hermesc" -type f \( -name "hermesc" -o -name "hermesc.exe" \) | head -n 1)
+          if [ -n "$HERMESC_BIN" ]; then
+            chmod +x "$HERMESC_BIN"
+            echo "Found hermesc at: $HERMESC_BIN"
+            "$HERMESC_BIN" -emit-binary -out android/app/src/main/assets/index.android.bundle.hbc android/app/src/main/assets/index.android.bundle
+            mv android/app/src/main/assets/index.android.bundle.hbc android/app/src/main/assets/index.android.bundle
+            echo "Successfully converted index.android.bundle from minified JS text into Hermes Bytecode (HBC binary)!"
+            file android/app/src/main/assets/index.android.bundle || true
+          else
+            echo "hermesc binary not found in node_modules"
+          fi
+
       - name: Setup Gradle Wrapper
         run: |
           cd android
