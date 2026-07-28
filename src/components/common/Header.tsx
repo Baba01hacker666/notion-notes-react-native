@@ -38,62 +38,51 @@ export const Header: React.FC<HeaderProps> = ({
           activeOpacity={0.8}
         >
           <View style={[styles.logoBadge, { backgroundColor: accentColor }]}>
-            <SparklesIcon size={18} color="#ffffff" />
+            <SparklesIcon size={20} color="#ffffff" />
           </View>
           <View>
-            <Text style={[styles.appTitle, { color: themeColors.textPrimary }]}>Notion Notes</Text>
+            <View style={styles.titleRow}>
+              <Text style={[styles.appTitle, { color: themeColors.textPrimary }]}>Notion Notes</Text>
+              <View style={[styles.statusDot, { backgroundColor: '#10b981' }]} />
+            </View>
             <Text style={[styles.appSubtitle, { color: themeColors.textMuted }]}>
-              {totalNotesCount} {totalNotesCount === 1 ? 'note' : 'notes'} • Offline
+              {totalNotesCount} {totalNotesCount === 1 ? 'note' : 'notes'} • Offline Sync
             </Text>
           </View>
         </TouchableOpacity>
 
         <View style={styles.rightActions}>
           {pinLockEnabled && (
-            <View style={[styles.iconButton, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
-              <ShieldIcon size={18} color="#10b981" />
+            <View style={[styles.iconButton, { backgroundColor: 'rgba(16, 185, 129, 0.15)', borderColor: 'rgba(16, 185, 129, 0.3)', borderWidth: 1 }]}>
+              <ShieldIcon size={16} color="#10b981" />
             </View>
           )}
 
-          <TouchableOpacity
-            style={[styles.iconButton, { backgroundColor: themeColors.badgeBg }]}
-            onPress={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-          >
-            {viewMode === 'grid' ? (
-              <ListIcon size={18} color={themeColors.textSecondary} />
-            ) : (
-              <GridIcon size={18} color={themeColors.textSecondary} />
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.navButton,
-              activeScreen === 'settings' && { backgroundColor: accentColor + '25', borderColor: accentColor },
-              { borderColor: themeColors.cardBorder },
-            ]}
-            onPress={() => setActiveScreen(activeScreen === 'settings' ? 'home' : 'settings')}
-          >
-            <SunIcon size={16} color={activeScreen === 'settings' ? accentColor : themeColors.textSecondary} />
-            <Text
-              style={[
-                styles.navButtonText,
-                { color: activeScreen === 'settings' ? accentColor : themeColors.textSecondary },
-              ]}
+          {/* View Mode Segmented Pill */}
+          <View style={[styles.viewSwitchContainer, { backgroundColor: themeColors.badgeBg, borderColor: themeColors.cardBorder }]}>
+            <TouchableOpacity
+              style={[styles.viewSwitchBtn, viewMode === 'grid' && { backgroundColor: themeColors.card, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 3 }]}
+              onPress={() => setViewMode('grid')}
             >
-              Settings
-            </Text>
-          </TouchableOpacity>
+              <GridIcon size={15} color={viewMode === 'grid' ? accentColor : themeColors.textMuted} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.viewSwitchBtn, viewMode === 'list' && { backgroundColor: themeColors.card, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 3 }]}
+              onPress={() => setViewMode('list')}
+            >
+              <ListIcon size={15} color={viewMode === 'list' ? accentColor : themeColors.textMuted} />
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity
             style={[
               styles.navButton,
-              activeScreen === 'folders' && { backgroundColor: accentColor + '25', borderColor: accentColor },
+              activeScreen === 'folders' && { backgroundColor: accentColor + '20', borderColor: accentColor },
               { borderColor: themeColors.cardBorder },
             ]}
             onPress={() => setActiveScreen(activeScreen === 'folders' ? 'home' : 'folders')}
           >
-            <FolderIcon size={16} color={activeScreen === 'folders' ? accentColor : themeColors.textSecondary} />
+            <FolderIcon size={15} color={activeScreen === 'folders' ? accentColor : themeColors.textSecondary} />
             <Text
               style={[
                 styles.navButtonText,
@@ -103,12 +92,31 @@ export const Header: React.FC<HeaderProps> = ({
               Folders
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.navButton,
+              activeScreen === 'settings' && { backgroundColor: accentColor + '20', borderColor: accentColor },
+              { borderColor: themeColors.cardBorder },
+            ]}
+            onPress={() => setActiveScreen(activeScreen === 'settings' ? 'home' : 'settings')}
+          >
+            <SunIcon size={15} color={activeScreen === 'settings' ? accentColor : themeColors.textSecondary} />
+            <Text
+              style={[
+                styles.navButtonText,
+                { color: activeScreen === 'settings' ? accentColor : themeColors.textSecondary },
+              ]}
+            >
+              Settings
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 
       {/* Instant Search Bar */}
       <View style={[styles.searchBarContainer, { backgroundColor: themeColors.inputBg, borderColor: themeColors.cardBorder }]}>
-        <SearchIcon size={18} color={themeColors.textMuted} style={{ marginRight: 8 }} />
+        <SearchIcon size={17} color={themeColors.textMuted} style={{ marginRight: 8 }} />
         <TextInput
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -118,9 +126,13 @@ export const Header: React.FC<HeaderProps> = ({
         />
         {searchQuery ? (
           <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearSearchBtn}>
-            <Text style={{ color: themeColors.textMuted, fontSize: 13, fontWeight: '600' }}>Clear</Text>
+            <Text style={{ color: themeColors.textMuted, fontSize: 12, fontWeight: '700' }}>Clear</Text>
           </TouchableOpacity>
-        ) : null}
+        ) : (
+          <View style={[styles.shortcutBadge, { backgroundColor: themeColors.badgeBg }]}>
+            <Text style={[styles.shortcutText, { color: themeColors.textMuted }]}>⌘K</Text>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -188,6 +200,37 @@ const styles = StyleSheet.create({
   navButtonText: {
     fontSize: 13,
     fontWeight: '600',
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  viewSwitchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 3,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  viewSwitchBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 7,
+  },
+  shortcutBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  shortcutText: {
+    fontSize: 10,
+    fontWeight: '700',
   },
   searchBarContainer: {
     flexDirection: 'row',

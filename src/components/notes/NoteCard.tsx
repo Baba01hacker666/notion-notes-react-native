@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Pin, Heart, Archive, Trash2, Folder, Clock, Tag as TagIcon, RotateCcw } from 'lucide-react';
+import { Pin, Heart, Archive, Trash2, Folder, Clock, Tag as TagIcon, RotateCcw, BookOpen } from 'lucide-react';
 import { Note, Folder as FolderType } from '../../types';
 import { ThemeColors } from '../../theme/colors';
 import { formatRelativeTime } from '../../utils/dateUtils';
+import { calculateStats } from '../../utils/textUtils';
 import { HapticsService } from '../../services/HapticsService';
 
 interface NoteCardProps {
@@ -40,6 +41,8 @@ export const NoteCard: React.FC<NoteCardProps> = ({
     .trim()
     .slice(0, 110);
 
+  const stats = calculateStats(note.content);
+
   return (
     <TouchableOpacity
       style={[
@@ -56,13 +59,15 @@ export const NoteCard: React.FC<NoteCardProps> = ({
     >
       {/* Top Header Row */}
       <View style={styles.headerRow}>
-        {folder && (
+        {folder ? (
           <View style={[styles.folderBadge, { backgroundColor: themeColors.badgeBg }]}>
             <Folder size={11} color={folder.color || accentColor} />
             <Text style={[styles.folderText, { color: themeColors.textSecondary }]} numberOfLines={1}>
               {folder.name}
             </Text>
           </View>
+        ) : (
+          <View style={styles.emptyBadgePlaceholder} />
         )}
 
         <View style={styles.headerIcons}>
@@ -126,9 +131,14 @@ export const NoteCard: React.FC<NoteCardProps> = ({
       {/* Footer Info & Quick Actions */}
       <View style={[styles.footer, { borderTopColor: themeColors.divider }]}>
         <View style={styles.metaTime}>
-          <Clock size={12} color={themeColors.textMuted} />
+          <Clock size={11} color={themeColors.textMuted} />
           <Text style={[styles.timeText, { color: themeColors.textMuted }]}>
             {formatRelativeTime(note.updatedAt)}
+          </Text>
+          <Text style={[styles.timeDivider, { color: themeColors.textMuted }]}>•</Text>
+          <BookOpen size={11} color={themeColors.textMuted} />
+          <Text style={[styles.timeText, { color: themeColors.textMuted }]}>
+            {stats.readingTimeMinutes}m
           </Text>
         </View>
 
@@ -271,6 +281,13 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     borderTopWidth: 1,
     marginTop: 4,
+  },
+  emptyBadgePlaceholder: {
+    height: 18,
+  },
+  timeDivider: {
+    fontSize: 10,
+    marginHorizontal: 2,
   },
   metaTime: {
     flexDirection: 'row',

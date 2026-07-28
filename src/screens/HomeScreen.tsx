@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { FileText, Pin, Trash2, Plus, Folder } from 'lucide-react';
+import { FileText, Pin, Trash2, Plus, Folder, Sparkles, Heart, Zap } from 'lucide-react';
 import { Note, Folder as FolderType, SmartFilterType, ActiveScreen } from '../types';
 import { ThemeColors } from '../theme/colors';
 import { NoteCard } from '../components/notes/NoteCard';
@@ -107,6 +107,58 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       )}
 
       <ScrollView style={styles.scrollArea} contentContainerStyle={styles.scrollContent}>
+        {/* Quick Stats Dashboard Card (shown on 'all' notes filter) */}
+        {activeFilter === 'all' && !selectedFolderId && (
+          <View style={[styles.heroCard, { backgroundColor: themeColors.card, borderColor: themeColors.cardBorder }]}>
+            <View style={styles.heroHeader}>
+              <View style={styles.heroTitleGroup}>
+                <View style={[styles.heroIconBadge, { backgroundColor: accentColor + '20' }]}>
+                  <Sparkles size={18} color={accentColor} />
+                </View>
+                <View>
+                  <Text style={[styles.heroTitle, { color: themeColors.textPrimary }]}>Welcome back!</Text>
+                  <Text style={[styles.heroSubtitle, { color: themeColors.textMuted }]}>Organize ideas & markdown notes seamlessly</Text>
+                </View>
+              </View>
+
+              <TouchableOpacity
+                style={[styles.heroQuickAddBtn, { backgroundColor: accentColor }]}
+                onPress={onCreateNote}
+                activeOpacity={0.85}
+              >
+                <Plus size={15} color="#ffffff" />
+                <Text style={styles.heroQuickAddText}>New Note</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Metrics Chips Row */}
+            <View style={styles.metricsRow}>
+              <View style={[styles.metricChip, { backgroundColor: themeColors.inputBg }]}>
+                <FileText size={14} color={accentColor} />
+                <Text style={[styles.metricNumber, { color: themeColors.textPrimary }]}>{counts.all}</Text>
+                <Text style={[styles.metricLabel, { color: themeColors.textMuted }]}>Total</Text>
+              </View>
+
+              <View style={[styles.metricChip, { backgroundColor: themeColors.inputBg }]}>
+                <Pin size={14} color="#f59e0b" />
+                <Text style={[styles.metricNumber, { color: themeColors.textPrimary }]}>{counts.pinned}</Text>
+                <Text style={[styles.metricLabel, { color: themeColors.textMuted }]}>Pinned</Text>
+              </View>
+
+              <View style={[styles.metricChip, { backgroundColor: themeColors.inputBg }]}>
+                <Heart size={14} color="#ef4444" />
+                <Text style={[styles.metricNumber, { color: themeColors.textPrimary }]}>{counts.favorites}</Text>
+                <Text style={[styles.metricLabel, { color: themeColors.textMuted }]}>Starred</Text>
+              </View>
+
+              <View style={[styles.metricChip, { backgroundColor: themeColors.inputBg }]}>
+                <Zap size={14} color="#10b981" />
+                <Text style={[styles.metricNumber, { color: themeColors.textPrimary }]}>{folders.length}</Text>
+                <Text style={[styles.metricLabel, { color: themeColors.textMuted }]}>Folders</Text>
+              </View>
+            </View>
+          </View>
+        )}
         {isLoading ? (
           <>
             <NoteCardSkeleton themeColors={themeColors} />
@@ -245,6 +297,86 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 };
 
 const styles = StyleSheet.create({
+  heroCard: {
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 16,
+    marginBottom: 16,
+    marginTop: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+  },
+  heroHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  heroTitleGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  heroIconBadge: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: -0.3,
+  },
+  heroSubtitle: {
+    fontSize: 11,
+    fontWeight: '500',
+    marginTop: 1,
+  },
+  heroQuickAddBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  heroQuickAddText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  metricsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    justifyContent: 'space-between',
+  },
+  metricChip: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 10,
+  },
+  metricNumber: {
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  metricLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
   container: {
     flex: 1,
   },

@@ -63,6 +63,15 @@ export const FAB: React.FC<FABProps> = ({
             <CheckSquare size={16} color="#10b981" />
             <Text style={[styles.menuText, { color: themeColors.textPrimary }]}>Checklist</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.menuItem, { backgroundColor: themeColors.card, borderColor: themeColors.cardBorder }]}
+            onPress={() => handleAction(_onCreateNote)}
+            activeOpacity={0.8}
+          >
+            <Plus size={16} color={accentColor} />
+            <Text style={[styles.menuText, { color: themeColors.textPrimary }]}>Blank Note</Text>
+          </TouchableOpacity>
         </View>
       )}
 

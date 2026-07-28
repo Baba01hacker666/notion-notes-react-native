@@ -318,6 +318,9 @@ export const RichMarkdownEditor: React.FC<RichMarkdownEditorProps> = ({
           />
         )}
 
+        {/* Decorative Cover Gradient Accent Bar */}
+        <View style={[styles.coverAccentBar, { backgroundColor: accentColor }]} />
+
         {/* Title Input */}
         <TextInput
           value={title}
@@ -514,6 +517,12 @@ const styles = StyleSheet.create({
   editorContent: {
     padding: 16,
     minHeight: '100%',
+  },
+  coverAccentBar: {
+    height: 4,
+    width: 60,
+    borderRadius: 2,
+    marginBottom: 12,
   },
   titleInput: {
     fontSize: 26,
