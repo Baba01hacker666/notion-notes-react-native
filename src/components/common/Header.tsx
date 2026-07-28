@@ -15,6 +15,7 @@ interface HeaderProps {
   setViewMode: (mode: 'grid' | 'list') => void;
   pinLockEnabled: boolean;
   totalNotesCount: number;
+  onOpenCommandPalette?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -129,9 +130,12 @@ export const Header: React.FC<HeaderProps> = ({
             <Text style={{ color: themeColors.textMuted, fontSize: 12, fontWeight: '700' }}>Clear</Text>
           </TouchableOpacity>
         ) : (
-          <View style={[styles.shortcutBadge, { backgroundColor: themeColors.badgeBg }]}>
+          <TouchableOpacity
+            onPress={onOpenCommandPalette}
+            style={[styles.shortcutBadge, { backgroundColor: themeColors.badgeBg }]}
+          >
             <Text style={[styles.shortcutText, { color: themeColors.textMuted }]}>⌘K</Text>
-          </View>
+          </TouchableOpacity>
         )}
       </View>
     </View>

@@ -7,6 +7,7 @@ import { useAuth } from './hooks/useAuth';
 import { Header } from './components/common/Header';
 import { FAB } from './components/common/FAB';
 import { PinLockModal } from './components/security/PinLockModal';
+import { CommandPalette } from './components/common/CommandPalette';
 
 import { HomeScreen } from './screens/HomeScreen';
 import { RichMarkdownEditor } from './components/editor/RichMarkdownEditor';
@@ -14,6 +15,7 @@ import { FoldersScreen } from './screens/FoldersScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 
 import { ActiveScreen } from './types';
+import { triggerConfetti } from './utils/confetti';
 
 export default function App() {
   const {
@@ -58,8 +60,10 @@ export default function App() {
 
   const [activeScreen, setActiveScreen] = useState<ActiveScreen>('home');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(settings.defaultView);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
 
   const handleCreateNote = () => {
+    triggerConfetti();
     createNote();
     setActiveScreen('editor');
   };
@@ -102,8 +106,29 @@ export default function App() {
             setViewMode={setViewMode}
             pinLockEnabled={settings.pinLockEnabled}
             totalNotesCount={notes.filter(n => !n.inTrash).length}
+            onOpenCommandPalette={() => setShowCommandPalette(true)}
           />
         )}
+
+        {/* Command Palette Modal */}
+        <CommandPalette
+          visible={showCommandPalette}
+          onClose={() => setShowCommandPalette(false)}
+          notes={notes}
+          folders={folders}
+          themeColors={themeColors}
+          accentColor={accentPalette.primary}
+          onSelectNote={note => {
+            setActiveNoteId(note.id);
+            setActiveScreen('editor');
+          }}
+          onCreateNote={handleCreateNote}
+          onCreateChecklistNote={handleCreateChecklistNote}
+          onCreateDrawingNote={handleCreateDrawingNote}
+          setActiveScreen={setActiveScreen}
+          setTheme={setTheme}
+          setAccentColor={setAccentColor}
+        />
 
         {/* Screen Switcher */}
         <View style={styles.mainContent}>
