@@ -19,6 +19,9 @@
     public <init>();
 }
 
+-keep class com.facebook.react.shell.MainReactPackage { *; }
+-keep class com.facebook.react.views.** { *; }
+-keep class com.facebook.react.modules.** { *; }
 -keep interface com.facebook.react.bridge.JavaScriptModule { *; }
 -keep interface com.facebook.react.bridge.NativeModule { *; }
 -keep class com.facebook.react.bridge.NativeModule { *; }
