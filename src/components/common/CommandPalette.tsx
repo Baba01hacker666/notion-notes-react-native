@@ -38,8 +38,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 }) => {
   const [query, setQuery] = useState('');
 
-  // Keyboard shortcut listener (Cmd+K / Ctrl+K)
+  // Keyboard shortcut listener (Cmd+K / Ctrl+K) for web
   useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.addEventListener !== 'function') return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
@@ -51,7 +52,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      if (typeof window.removeEventListener === 'function') {
+        window.removeEventListener('keydown', handleKeyDown);
+      }
+    };
   }, [visible, onClose]);
 
   if (!visible) return null;

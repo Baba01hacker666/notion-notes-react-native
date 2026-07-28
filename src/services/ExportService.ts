@@ -44,7 +44,7 @@ export class ExportService {
   }
 
   public static downloadFile(content: string, filename: string, mimeType: string) {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       const blob = new Blob([content], { type: mimeType });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -58,7 +58,7 @@ export class ExportService {
   }
 
   public static printOrSavePDF(note: Note) {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof document !== 'undefined' && typeof window.open === 'function') {
       const htmlContent = this.exportAsHTML(note);
       const printWindow = window.open('', '_blank');
       if (printWindow) {
