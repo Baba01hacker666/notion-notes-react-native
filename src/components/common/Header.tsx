@@ -29,6 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
   setViewMode,
   pinLockEnabled,
   totalNotesCount,
+  onOpenCommandPalette,
 }) => {
   return (
     <View style={[styles.container, { backgroundColor: themeColors.header, borderBottomColor: themeColors.divider }]}>
