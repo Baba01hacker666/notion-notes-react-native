@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, SafeAreaView, StatusBar, BackHandler, ActivityIndicator, Platform } from 'react-native';
 import { useNotes } from './hooks/useNotes';
 import { useTheme } from './hooks/useTheme';
 import { useAuth } from './hooks/useAuth';
@@ -16,8 +16,36 @@ import { SettingsScreen } from './screens/SettingsScreen';
 
 import { ActiveScreen } from './types';
 import { triggerConfetti } from './utils/confetti';
+import { mmkvStorage } from './storage/MMKVStorage';
 
 export default function App() {
+  const [storageReady, setStorageReady] = useState<boolean>(mmkvStorage.isReady);
+
+  useEffect(() => {
+    if (!storageReady) {
+      mmkvStorage.onReady(() => setStorageReady(true));
+    }
+  }, [storageReady]);
+
+  if (!storageReady) {
+    return <BootSplash />;
+  }
+
+  return <AppShell />;
+}
+
+/** Minimal branded splash shown until persisted data is hydrated. */
+function BootSplash() {
+  return (
+    <View style={styles.bootSplash}>
+      <View style={styles.bootLogoBadge}>
+        <ActivityIndicator size="large" color="#6366f1" />
+      </View>
+    </View>
+  );
+}
+
+function AppShell() {
   const {
     notes,
     filteredNotes,
@@ -62,6 +90,24 @@ export default function App() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(settings.defaultView);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
 
+  // Android hardware back button: close overlays, then leave the editor,
+  // otherwise let the system handle it.
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (showCommandPalette) {
+        setShowCommandPalette(false);
+        return true;
+      }
+      if (activeScreen === 'editor') {
+        setActiveScreen('home');
+        return true;
+      }
+      return false;
+    });
+    return () => subscription.remove();
+  }, [activeScreen, showCommandPalette]);
+
   const handleCreateNote = () => {
     triggerConfetti();
     createNote();
@@ -83,6 +129,10 @@ export default function App() {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: themeColors.background }]}>
+      <StatusBar
+        barStyle={settings.theme === 'light' ? 'dark-content' : 'light-content'}
+        backgroundColor={themeColors.header}
+      />
       <View style={[styles.appWrapper, { backgroundColor: themeColors.background }]}>
         {/* Security Lock Overlay */}
         {isLocked && (
@@ -240,5 +290,19 @@ const styles = StyleSheet.create({
   },
   bottomDock: {
     height: 0,
+  },
+  bootSplash: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0f172a',
+  },
+  bootLogoBadge: {
+    width: 72,
+    height: 72,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#1e293b',
   },
 });

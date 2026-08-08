@@ -1,48 +1,105 @@
 /**
- * MMKV Storage Abstraction Layer
- * Provides high-speed key-value persistence with native MMKV binding support
- * and web localStorage fallback, prepared for future cloud sync engines.
+ * Storage Abstraction Layer
+ * Provides fast key-value persistence with a synchronous in-memory cache on top of:
+ *  - AsyncStorage on native (Android/iOS) for real on-device persistence
+ *  - window.localStorage on web (keys unchanged, so existing web data is preserved)
+ *
+ * The cache keeps the synchronous get/set API used across the app; writes are
+ * persisted in the background. Call `init()` once at app startup.
  */
+
+import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const isWeb = Platform.OS === 'web';
 
 class StorageAdapter {
   private memoryStore: Map<string, string> = new Map();
+  private _isReady: boolean = isWeb;
+  private readyCallbacks: Array<() => void> = [];
 
   constructor() {
-    this.initFallback();
+    if (isWeb) {
+      this.hydrateFromLocalStorage();
+    }
   }
 
-  private initFallback() {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      try {
-        for (let i = 0; i < window.localStorage.length; i++) {
-          const key = window.localStorage.key(i);
-          if (key) {
-            this.memoryStore.set(key, window.localStorage.getItem(key) || '');
-          }
+  private hydrateFromLocalStorage() {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+    try {
+      for (let i = 0; i < window.localStorage.length; i++) {
+        const key = window.localStorage.key(i);
+        if (key) {
+          this.memoryStore.set(key, window.localStorage.getItem(key) || '');
         }
-      } catch (e) {
-        console.warn('Storage initialisation warning:', e);
       }
+    } catch (e) {
+      console.warn('Storage hydration warning:', e);
     }
+  }
+
+  /**
+   * Loads all persisted values into the in-memory cache. No-op on web (already
+   * hydrated synchronously). Resolves once the cache is safe to read.
+   */
+  public async init(): Promise<void> {
+    if (isWeb) return;
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      for (const key of keys) {
+        const value = await AsyncStorage.getItem(key);
+        if (value != null) {
+          this.memoryStore.set(key, value);
+        }
+      }
+    } catch (e) {
+      console.warn('Storage hydration failed:', e);
+    }
+    this._isReady = true;
+    this.readyCallbacks.forEach(cb => {
+      try {
+        cb();
+      } catch (e) {
+        console.warn('Storage ready callback error:', e);
+      }
+    });
+    this.readyCallbacks = [];
+  }
+
+  get isReady(): boolean {
+    return this._isReady;
+  }
+
+  /** Invoke cb as soon as the store has been hydrated (immediately if ready). */
+  public onReady(cb: () => void): void {
+    if (this._isReady) {
+      cb();
+      return;
+    }
+    this.readyCallbacks.push(cb);
+  }
+
+  private persist(key: string, value: string) {
+    if (isWeb) {
+      try {
+        window.localStorage.setItem(key, value);
+      } catch (e) {
+        console.warn('Storage setString error:', e);
+      }
+      return;
+    }
+    AsyncStorage.setItem(key, value).catch(e =>
+      console.warn('Storage setString error:', e)
+    );
   }
 
   public setString(key: string, value: string): void {
     this.memoryStore.set(key, value);
-    if (typeof window !== 'undefined' && window.localStorage) {
-      try {
-        window.localStorage.setItem(key, value);
-      } catch (e) {
-        console.error('MMKV Storage setString error:', e);
-      }
-    }
+    this.persist(key, value);
   }
 
   public getString(key: string): string | null {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const val = window.localStorage.getItem(key);
-      if (val !== null) return val;
-    }
-    return this.memoryStore.get(key) || null;
+    return this.memoryStore.get(key) ?? null;
   }
 
   public setMap<T>(key: string, value: T): void {
@@ -61,25 +118,30 @@ class StorageAdapter {
 
   public delete(key: string): void {
     this.memoryStore.delete(key);
-    if (typeof window !== 'undefined' && window.localStorage) {
+    if (isWeb) {
       try {
         window.localStorage.removeItem(key);
       } catch (e) {
-        console.error('MMKV Storage delete error:', e);
+        console.warn('Storage delete error:', e);
       }
+      return;
     }
+    AsyncStorage.removeItem(key).catch(e => console.warn('Storage delete error:', e));
   }
 
   public clearAll(): void {
     this.memoryStore.clear();
-    if (typeof window !== 'undefined' && window.localStorage) {
+    if (isWeb) {
       try {
         window.localStorage.clear();
       } catch (e) {
-        console.error('MMKV Storage clearAll error:', e);
+        console.warn('Storage clearAll error:', e);
       }
+      return;
     }
+    AsyncStorage.clear().catch(e => console.warn('Storage clearAll error:', e));
   }
 }
 
 export const mmkvStorage = new StorageAdapter();
+export const initStorage = () => mmkvStorage.init();

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput, Platform, Modal, Alert } from 'react-native';
 import {
   Palette,
   Shield,
@@ -46,6 +46,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   const [showPinModal, setShowPinModal] = useState(false);
   const [pinInput, setPinInput] = useState('');
   const [pinError, setPinError] = useState('');
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importText, setImportText] = useState('');
+  const [importError, setImportError] = useState('');
 
   const themes: Array<{ id: AppThemeMode; name: string; bg: string }> = [
     { id: 'notion-dark', name: 'Notion Dark', bg: '#191919' },
@@ -79,26 +82,29 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     ExportService.downloadFile(jsonStr, `notion_notes_backup_${Date.now()}.json`, 'application/json');
   };
 
-  const handleImportBackup = (e: any) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = event => {
-        try {
-          const imported = JSON.parse(event.target?.result as string);
-          if (Array.isArray(imported)) {
-            onImportNotes(imported);
-            alert(`Successfully imported ${imported.length} notes!`);
-          }
-        } catch (err) {
-          alert('Invalid backup file format.');
-        }
-      };
-      reader.readAsText(file);
+  const handleImportFromText = () => {
+    try {
+      const parsed = JSON.parse(importText);
+      if (!Array.isArray(parsed) || parsed.length === 0 || !parsed[0] || typeof parsed[0].title !== 'string') {
+        setImportError('Invalid backup: expected a JSON array of notes (e.g. from Export Backup).');
+        return;
+      }
+      onImportNotes(parsed);
+      setImportText('');
+      setImportError('');
+      setShowImportModal(false);
+      Alert.alert('Backup imported', `Successfully imported ${parsed.length} notes!`);
+    } catch (err) {
+      setImportError('Could not parse JSON. Check the backup content and try again.');
     }
   };
 
-  const isHermesRunning = typeof window !== 'undefined' && !!(window as any).HermesInternal;
+  const engineLabel =
+    Platform.OS === 'web'
+      ? 'JavaScript (React Native Web)'
+      : (globalThis as any).HermesInternal
+      ? 'Hermes (Bytecode AOT)'
+      : 'JavaScriptCore';
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
@@ -242,52 +248,18 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               <Text style={styles.backupBtnText}>Export Backup (JSON)</Text>
             </TouchableOpacity>
 
-            {Platform.OS === 'web' ? (
-              <TouchableOpacity
-                style={[styles.backupBtn, { backgroundColor: themeColors.badgeBg }]}
-                onPress={() => {
-                  if (typeof document !== 'undefined') {
-                    const input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = '.json';
-                    input.onchange = (e: any) => handleImportBackup(e);
-                    input.click();
-                  }
-                }}
-              >
-                <Upload size={16} color={themeColors.textPrimary} />
-                <Text style={[styles.backupBtnText, { color: themeColors.textPrimary }]}>Import Backup</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={[styles.backupBtn, { backgroundColor: themeColors.badgeBg }]}
-                onPress={() => {
-                  const sampleBackup: Note[] = [
-                    {
-                      id: `imported_${Date.now()}`,
-                      title: '🚀 Restored Backup Note',
-                      content: '# Backup Restored\n\nNotes have been restored from local backup.',
-                      folderId: null,
-                      tags: ['Backup'],
-                      isPinned: false,
-                      isFavorite: true,
-                      isArchived: false,
-                      inTrash: false,
-                      createdAt: Date.now(),
-                      updatedAt: Date.now(),
-                      wordCount: 8,
-                      characterCount: 65,
-                      readingTimeMinutes: 1,
-                    },
-                  ];
-                  onImportNotes(sampleBackup);
-                }}
-              >
-                <Upload size={16} color={themeColors.textPrimary} />
-                <Text style={[styles.backupBtnText, { color: themeColors.textPrimary }]}>Import Backup</Text>
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity
+              style={[styles.backupBtn, { backgroundColor: themeColors.badgeBg }]}
+              onPress={() => setShowImportModal(true)}
+            >
+              <Upload size={16} color={themeColors.textPrimary} />
+              <Text style={[styles.backupBtnText, { color: themeColors.textPrimary }]}>Import Backup</Text>
+            </TouchableOpacity>
           </View>
+
+          <Text style={[styles.backupHint, { color: themeColors.textMuted }]}>
+            Paste a backup JSON (produced by “Export Backup”) to restore your notes on this device.
+          </Text>
         </View>
 
         {/* About & Performance Metrics */}
@@ -300,13 +272,15 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <View style={styles.infoRow}>
             <Text style={[styles.infoKey, { color: themeColors.textMuted }]}>JS Engine</Text>
             <View style={[styles.engineBadge, { backgroundColor: 'rgba(16, 185, 129, 0.2)' }]}>
-              <Text style={styles.engineText}>Hermes Enabled (Bytecode AOT)</Text>
+              <Text style={styles.engineText}>{engineLabel}</Text>
             </View>
           </View>
 
           <View style={styles.infoRow}>
             <Text style={[styles.infoKey, { color: themeColors.textMuted }]}>Storage Engine</Text>
-            <Text style={[styles.infoVal, { color: themeColors.textPrimary }]}>MMKV Ultra Fast</Text>
+            <Text style={[styles.infoVal, { color: themeColors.textPrimary }]}>
+              AsyncStorage (persistent, offline-first)
+            </Text>
           </View>
 
           <View style={styles.infoRow}>
@@ -315,6 +289,45 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           </View>
         </View>
       </ScrollView>
+
+      {/* Import Backup Modal (paste JSON — works on web and native) */}
+      <Modal visible={showImportModal} transparent animationType="fade" onRequestClose={() => setShowImportModal(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalCard, { backgroundColor: themeColors.card, borderColor: themeColors.cardBorder }]}>
+            <Text style={[styles.modalTitle, { color: themeColors.textPrimary }]}>Import Backup</Text>
+            <Text style={[styles.modalSub, { color: themeColors.textMuted }]}>
+              Paste the JSON array of notes from your exported backup.
+            </Text>
+            <TextInput
+              value={importText}
+              onChangeText={setImportText}
+              placeholder='[{"id":"note_1","title":"My Note",...}]'
+              placeholderTextColor={themeColors.textMuted}
+              multiline
+              style={[styles.importInput, { backgroundColor: themeColors.inputBg, color: themeColors.textPrimary }]}
+              textAlignVertical="top"
+            />
+            {importError ? <Text style={styles.errorText}>{importError}</Text> : null}
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={[styles.modalCancelBtn, { backgroundColor: themeColors.badgeBg }]}
+                onPress={() => {
+                  setShowImportModal(false);
+                  setImportError('');
+                }}
+              >
+                <Text style={[styles.modalCancelText, { color: themeColors.textPrimary }]}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalImportBtn, { backgroundColor: accentColor }]}
+                onPress={handleImportFromText}
+              >
+                <Text style={styles.modalImportText}>Import Notes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -497,6 +510,63 @@ const styles = StyleSheet.create({
   engineText: {
     color: '#10b981',
     fontSize: 12,
+    fontWeight: '700',
+  },
+  backupHint: {
+    fontSize: 11,
+    marginTop: 8,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  modalCard: {
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 16,
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    marginBottom: 4,
+  },
+  modalSub: {
+    fontSize: 12,
+    marginBottom: 12,
+  },
+  importInput: {
+    minHeight: 120,
+    borderRadius: 10,
+    padding: 10,
+    fontSize: 12,
+    fontFamily: 'monospace',
+    outlineStyle: 'none',
+  } as any,
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 10,
+    marginTop: 14,
+  },
+  modalCancelBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  modalCancelText: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  modalImportBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  modalImportText: {
+    color: '#ffffff',
+    fontSize: 13,
     fontWeight: '700',
   },
 });

@@ -1,4 +1,7 @@
 import { Note } from '../types';
+import { Platform, Share } from 'react-native';
+
+export type ExportFormat = 'md' | 'html' | 'txt' | 'json';
 
 export class ExportService {
   public static exportAsMarkdown(note: Note): string {
@@ -69,6 +72,59 @@ export class ExportService {
           printWindow.print();
         }, 500);
       }
+    }
+  }
+
+  private static filenameFor(note: Note, format: ExportFormat): string {
+    const safeTitle = note.title.replace(/[^\w\s-]/g, '').replace(/\s+/g, '_') || 'note';
+    const ext = format === 'json' ? 'json' : format === 'html' ? 'html' : format === 'txt' ? 'txt' : 'md';
+    return `${safeTitle}.${ext}`;
+  }
+
+  private static contentFor(note: Note, format: ExportFormat): string {
+    switch (format) {
+      case 'html':
+        return this.exportAsHTML(note);
+      case 'txt':
+        return this.exportAsTXT(note);
+      case 'json':
+        return this.exportAsJSON([note]);
+      case 'md':
+      default:
+        return this.exportAsMarkdown(note);
+    }
+  }
+
+  /**
+   * Exports a note: downloads a file on web, opens the native share sheet on
+   * Android/iOS. Resolves with true when the action completed.
+   */
+  public static async exportNote(note: Note, format: ExportFormat): Promise<boolean> {
+    const content = this.contentFor(note, format);
+    const filename = this.filenameFor(note, format);
+
+    if (Platform.OS === 'web') {
+      const mime =
+        format === 'json'
+          ? 'application/json'
+          : format === 'html'
+          ? 'text/html'
+          : format === 'txt'
+          ? 'text/plain'
+          : 'text/markdown';
+      this.downloadFile(content, filename, mime);
+      return true;
+    }
+
+    try {
+      await Share.share({
+        title: note.title,
+        message: content,
+      });
+      return true;
+    } catch (e) {
+      console.warn('Share cancelled or failed:', e);
+      return false;
     }
   }
 }

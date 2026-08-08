@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import {
   ArrowLeft,
   Bold,
@@ -27,6 +27,7 @@ import { Note, Folder, Tag } from '../../types';
 import { ThemeColors } from '../../theme/colors';
 import { DrawingCanvas } from './DrawingCanvas';
 import { VoiceRecorder } from './VoiceRecorder';
+import { MarkdownRenderer } from './MarkdownRenderer';
 import { ExportService } from '../../services/ExportService';
 import { calculateStats } from '../../utils/textUtils';
 import { HapticsService } from '../../services/HapticsService';
@@ -48,7 +49,7 @@ interface RichMarkdownEditorProps {
 export const RichMarkdownEditor: React.FC<RichMarkdownEditorProps> = ({
   note,
   folders,
-  tags: _tags,
+  tags,
   themeColors,
   accentColor,
   onBack,
@@ -66,6 +67,10 @@ export const RichMarkdownEditor: React.FC<RichMarkdownEditorProps> = ({
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [newTagInput, setNewTagInput] = useState('');
   const [showTagInput, setShowTagInput] = useState(false);
+  const [selection, setSelection] = useState<{ start: number; end: number }>({
+    start: note.content.length,
+    end: note.content.length,
+  });
 
   // Auto save when title or content changes
   useEffect(() => {
@@ -80,8 +85,16 @@ export const RichMarkdownEditor: React.FC<RichMarkdownEditorProps> = ({
 
   const insertTextAtCursor = (insertion: string) => {
     HapticsService.trigger('light');
-    setContent(prev => prev + '\n' + insertion);
+    const pos = selection.start ?? content.length;
+    const end = selection.end ?? pos;
+    const next =
+      content.slice(0, pos) + (pos === end ? '\n' + insertion : insertion) + content.slice(end);
+    setContent(next);
+    const newPos = pos + (pos === end ? 1 : 0) + insertion.length;
+    setSelection({ start: newPos, end: newPos });
   };
+
+  const tagMeta = (name: string) => tags.find(t => t.name === name);
 
   const handleAddTag = () => {
     if (newTagInput.trim()) {
@@ -183,7 +196,7 @@ export const RichMarkdownEditor: React.FC<RichMarkdownEditorProps> = ({
           <TouchableOpacity
             style={styles.exportItem}
             onPress={() => {
-              ExportService.downloadFile(ExportService.exportAsMarkdown(note), `${title}.md`, 'text/markdown');
+              ExportService.exportNote(note, 'md');
               setShowExportMenu(false);
             }}
           >
@@ -194,18 +207,24 @@ export const RichMarkdownEditor: React.FC<RichMarkdownEditorProps> = ({
           <TouchableOpacity
             style={styles.exportItem}
             onPress={() => {
-              ExportService.printOrSavePDF(note);
+              if (Platform.OS === 'web') {
+                ExportService.printOrSavePDF(note);
+              } else {
+                ExportService.exportNote(note, 'html');
+              }
               setShowExportMenu(false);
             }}
           >
             <Sparkles size={16} color="#8b5cf6" />
-            <Text style={[styles.exportItemText, { color: themeColors.textPrimary }]}>Export as PDF</Text>
+            <Text style={[styles.exportItemText, { color: themeColors.textPrimary }]}>
+              {Platform.OS === 'web' ? 'Export as PDF' : 'Export as PDF (share)'}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.exportItem}
             onPress={() => {
-              ExportService.downloadFile(ExportService.exportAsHTML(note), `${title}.html`, 'text/html');
+              ExportService.exportNote(note, 'html');
               setShowExportMenu(false);
             }}
           >
@@ -216,7 +235,7 @@ export const RichMarkdownEditor: React.FC<RichMarkdownEditorProps> = ({
           <TouchableOpacity
             style={styles.exportItem}
             onPress={() => {
-              ExportService.downloadFile(ExportService.exportAsTXT(note), `${title}.txt`, 'text/plain');
+              ExportService.exportNote(note, 'txt');
               setShowExportMenu(false);
             }}
           >
@@ -333,17 +352,20 @@ export const RichMarkdownEditor: React.FC<RichMarkdownEditorProps> = ({
 
         {/* Tags Row */}
         <View style={styles.tagsContainer}>
-          {(note.tags || []).map((tag, idx) => (
-            <View key={idx} style={[styles.tagBadge, { backgroundColor: accentColor + '20' }]}>
-              <TagIcon size={11} color={accentColor} />
-              <Text style={[styles.tagText, { color: accentColor }]}>{tag}</Text>
-              {!isPreviewMode && (
-                <TouchableOpacity onPress={() => handleRemoveTag(tag)} style={styles.removeTagBtn}>
-                  <Text style={{ color: accentColor, fontSize: 11, fontWeight: '700' }}>×</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          ))}
+          {(note.tags || []).map((tag, idx) => {
+            const tagColor = tagMeta(tag)?.color || accentColor;
+            return (
+              <View key={idx} style={[styles.tagBadge, { backgroundColor: tagColor + '20' }]}>
+                <TagIcon size={11} color={tagColor} />
+                <Text style={[styles.tagText, { color: tagColor }]}>{tag}</Text>
+                {!isPreviewMode && (
+                  <TouchableOpacity onPress={() => handleRemoveTag(tag)} style={styles.removeTagBtn}>
+                    <Text style={{ color: tagColor, fontSize: 11, fontWeight: '700' }}>×</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            );
+          })}
 
           {!isPreviewMode && (
             showTagInput ? (
@@ -375,12 +397,13 @@ export const RichMarkdownEditor: React.FC<RichMarkdownEditorProps> = ({
         {/* Content Body Editor or Live Markdown Preview */}
         {isPreviewMode ? (
           <View style={[styles.previewArea, { backgroundColor: themeColors.card, borderColor: themeColors.cardBorder }]}>
-            <Text style={[styles.previewContent, { color: themeColors.textPrimary }]}>{content}</Text>
+            <MarkdownRenderer content={content} themeColors={themeColors} accentColor={accentColor} />
           </View>
         ) : (
           <TextInput
             value={content}
             onChangeText={setContent}
+            onSelectionChange={e => setSelection(e.nativeEvent.selection)}
             placeholder="Start typing your note in Markdown..."
             placeholderTextColor={themeColors.textMuted}
             multiline
