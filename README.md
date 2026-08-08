@@ -1,6 +1,6 @@
 # 🚀 Modern Notion Notes - React Native (Hermes Engine Enabled)
 
-A premium-quality, offline-first Notes application built with **React Native**, **Hermes JavaScript Engine enabled by default**, **TypeScript**, **MMKV Local Storage**, and **Reanimated**.
+A premium-quality, offline-first Notes application built with **React Native**, **Hermes JavaScript Engine enabled by default**, **TypeScript**, **AsyncStorage local persistence**, and a polished web experience via React Native Web.
 
 ---
 
@@ -30,11 +30,11 @@ A premium-quality, offline-first Notes application built with **React Native**, 
 - **Custom Tags**: Categorization with color badges.
 
 ### 🔒 Security & Privacy
-- **Offline First**: All data stored locally using an MMKV abstraction layer.
+- **Offline First**: All data stored locally via a persistent AsyncStorage-backed storage layer.
 - **App Lock (4-Digit PIN)**: Protect sensitive notes with custom PIN authentication.
 - **Biometric Unlock Simulation**: Modern biometric security interface.
-- **Local Data Encryption**: Secure payload obfuscation in MMKV storage.
-- **Full Backup & Restore**: Export/Import entire database in JSON format.
+- **Local Data Encryption**: Secure payload obfuscation in local storage.
+- **Full Backup & Restore**: Export/Import the entire database in JSON format.
 
 ---
 
@@ -42,9 +42,9 @@ A premium-quality, offline-first Notes application built with **React Native**, 
 
 - **Core**: React Native, React Native Web, React 18, TypeScript
 - **JS Engine**: Hermes Engine (Pre-compiled Bytecode AOT)
-- **State & Storage**: Custom Hooks + MMKV High-Speed Storage Abstraction Layer
+- **State & Storage**: Custom Hooks + AsyncStorage persistence layer (web: localStorage)
 - **Icons**: Lucide Icons
-- **Build System**: Vite (Web), Metro (React Native / Expo), Gradle (Android)
+- **Build System**: Vite (Web), Metro (React Native), Gradle (Android)
 
 ---
 
@@ -114,20 +114,24 @@ npm run build
 
 ## 🤖 Android Native Build (Hermes JS Engine)
 
-The project includes pre-configured Android Gradle settings with Hermes enabled by default in `android/app/build.gradle`:
+The project uses the standard React Native Gradle build (RN 0.73) with Hermes enabled
+in `android/gradle.properties`:
 
-\`\`\`groovy
-project.ext.react = [
-    enableHermes: true, // Hermes JS Engine ENABLED
-]
+\`\`\`properties
+hermesEnabled=true
+newArchEnabled=false
 \`\`\`
 
-To build APK locally with Android SDK:
+The Gradle build automatically bundles the JS with Metro and compiles it to Hermes
+bytecode (no manual bundling steps required):
+
 \`\`\`bash
 cd android
-./gradlew assembleDebug
-./gradlew assembleRelease
+./gradlew assembleDebug   # debug APK (bundled, standalone)
+./gradlew assembleRelease # release APK (Hermes bytecode)
 \`\`\`
+
+Both APKs are written to `android/app/build/outputs/apk/`.
 
 ---
 
