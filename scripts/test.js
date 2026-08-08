@@ -44,7 +44,15 @@ async function main() {
     ],
   });
 
-  execSync('node --test "dist-tests/*.test.js"', { stdio: 'inherit', cwd: root });
+  // Pass explicit file paths (node <21 does not expand globs in --test args).
+  const files = fs
+    .readdirSync(outDir)
+    .filter(f => f.endsWith('.test.js'))
+    .map(f => path.join('dist-tests', f));
+  execSync(`node --test ${files.map(f => JSON.stringify(f)).join(' ')}`, {
+    stdio: 'inherit',
+    cwd: root,
+  });
 }
 
 main().catch(err => {
