@@ -45,11 +45,15 @@ class StorageAdapter {
   public async init(): Promise<void> {
     if (isWeb) return;
     try {
-      const keys = await AsyncStorage.getAllKeys();
-      for (const key of keys) {
-        const value = await AsyncStorage.getItem(key);
-        if (value != null) {
-          this.memoryStore.set(key, value);
+      if (AsyncStorage && typeof AsyncStorage.getAllKeys === 'function') {
+        const keys = await AsyncStorage.getAllKeys();
+        if (keys && keys.length > 0) {
+          for (const key of keys) {
+            const value = await AsyncStorage.getItem(key);
+            if (value != null) {
+              this.memoryStore.set(key, value);
+            }
+          }
         }
       }
     } catch (e) {
@@ -88,9 +92,13 @@ class StorageAdapter {
       }
       return;
     }
-    AsyncStorage.setItem(key, value).catch(e =>
-      console.warn('Storage setString error:', e)
-    );
+    try {
+      AsyncStorage?.setItem?.(key, value)?.catch?.(e =>
+        console.warn('Storage setString error:', e)
+      );
+    } catch (e) {
+      console.warn('Storage setString error:', e);
+    }
   }
 
   public setString(key: string, value: string): void {
@@ -126,7 +134,11 @@ class StorageAdapter {
       }
       return;
     }
-    AsyncStorage.removeItem(key).catch(e => console.warn('Storage delete error:', e));
+    try {
+      AsyncStorage?.removeItem?.(key)?.catch?.(e => console.warn('Storage delete error:', e));
+    } catch (e) {
+      console.warn('Storage delete error:', e);
+    }
   }
 
   public clearAll(): void {
@@ -139,7 +151,11 @@ class StorageAdapter {
       }
       return;
     }
-    AsyncStorage.clear().catch(e => console.warn('Storage clearAll error:', e));
+    try {
+      AsyncStorage?.clear?.()?.catch?.(e => console.warn('Storage clearAll error:', e));
+    } catch (e) {
+      console.warn('Storage clearAll error:', e);
+    }
   }
 }
 
