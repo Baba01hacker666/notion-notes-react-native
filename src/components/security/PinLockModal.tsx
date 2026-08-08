@@ -1,7 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Lock, Fingerprint, Delete, ShieldAlert } from 'lucide-react';
+import {
+  Lock as RawLock,
+  Fingerprint as RawFingerprint,
+  Delete as RawDelete,
+  ShieldAlert as RawShieldAlert,
+} from 'lucide-react';
+import { createSafeIcon } from '../common/SafeIcon';
 import { ThemeColors } from '../../theme/colors';
+
+const Lock = createSafeIcon(RawLock, '🔒');
+const Fingerprint = createSafeIcon(RawFingerprint, '🔏');
+const Delete = createSafeIcon(RawDelete, '⌫');
+const ShieldAlert = createSafeIcon(RawShieldAlert, '🚨');
 import { HapticsService } from '../../services/HapticsService';
 import { SecurityService } from '../../services/SecurityService';
 

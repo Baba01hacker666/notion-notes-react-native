@@ -1,16 +1,25 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput, Platform, Modal, Alert } from 'react-native';
 import {
-  Palette,
-  Shield,
-  Download,
-  Upload,
-  ArrowLeft,
-  Check,
-  Cpu,
+  Palette as RawPalette,
+  Shield as RawShield,
+  Download as RawDownload,
+  Upload as RawUpload,
+  ArrowLeft as RawArrowLeft,
+  Check as RawCheck,
+  Cpu as RawCpu,
 } from 'lucide-react';
+import { createSafeIcon } from '../components/common/SafeIcon';
 import { AppThemeMode, AccentColorKey, UserSettings, ActiveScreen, Note } from '../types';
 import { THEMES, ACCENT_PALETTES, ThemeColors } from '../theme/colors';
+
+const Palette = createSafeIcon(RawPalette, '🎨');
+const Shield = createSafeIcon(RawShield, '🛡️');
+const Download = createSafeIcon(RawDownload, '📥');
+const Upload = createSafeIcon(RawUpload, '📤');
+const ArrowLeft = createSafeIcon(RawArrowLeft, '←');
+const Check = createSafeIcon(RawCheck, '✓');
+const Cpu = createSafeIcon(RawCpu, '⚙️');
 import { ExportService } from '../services/ExportService';
 import { HapticsService } from '../services/HapticsService';
 
@@ -542,8 +551,8 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 12,
     fontFamily: 'monospace',
-    outlineStyle: 'none',
-  } as any,
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : {}),
+  },
   modalActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',

@@ -1,8 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
-import { Folder, FolderPlus, ChevronRight, Trash2, ArrowLeft } from 'lucide-react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Platform } from 'react-native';
+import {
+  Folder as RawFolder,
+  FolderPlus as RawFolderPlus,
+  ChevronRight as RawChevron,
+  Trash2 as RawTrash,
+  ArrowLeft as RawArrowLeft,
+} from 'lucide-react';
+import { createSafeIcon } from '../components/common/SafeIcon';
 import { Folder as FolderType, Note, ActiveScreen } from '../types';
 import { ThemeColors } from '../theme/colors';
+
+const Folder = createSafeIcon(RawFolder, '📁');
+const FolderPlus = createSafeIcon(RawFolderPlus, '📂');
+const ChevronRight = createSafeIcon(RawChevron, '▶');
+const Trash2 = createSafeIcon(RawTrash, '🗑️');
+const ArrowLeft = createSafeIcon(RawArrowLeft, '←');
 import { HapticsService } from '../services/HapticsService';
 
 interface FoldersScreenProps {
@@ -230,8 +243,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     marginBottom: 14,
-    outlineStyle: 'none',
-  } as any,
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : {}),
+  },
   colorPickerLabel: {
     fontSize: 12,
     fontWeight: '600',

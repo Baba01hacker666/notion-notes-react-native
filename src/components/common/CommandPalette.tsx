@@ -1,9 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Modal } from 'react-native';
-import { Search, Sparkles, Plus, Folder, Sun, Shield, Pin, Heart, X, CheckSquare, PenTool } from 'lucide-react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Modal, Platform } from 'react-native';
+import {
+  Search as RawSearch,
+  Sparkles as RawSparkles,
+  Plus as RawPlus,
+  Folder as RawFolder,
+  Sun as RawSun,
+  Shield as RawShield,
+  Pin as RawPin,
+  Heart as RawHeart,
+  X as RawX,
+  CheckSquare as RawCheckSquare,
+  PenTool as RawPenTool,
+} from 'lucide-react';
+import { createSafeIcon } from './SafeIcon';
 import { ThemeColors } from '../../theme/colors';
 import { Note, Folder as FolderType, ActiveScreen, AppThemeMode, AccentColorKey } from '../../types';
 import { triggerConfetti } from '../../utils/confetti';
+
+const Search = createSafeIcon(RawSearch, '🔍');
+const Sparkles = createSafeIcon(RawSparkles, '✨');
+const Plus = createSafeIcon(RawPlus, '➕');
+const Folder = createSafeIcon(RawFolder, '📁');
+const Sun = createSafeIcon(RawSun, '☀️');
+const Shield = createSafeIcon(RawShield, '🛡️');
+const Pin = createSafeIcon(RawPin, '📌');
+const Heart = createSafeIcon(RawHeart, '❤️');
+const X = createSafeIcon(RawX, '✖️');
+const CheckSquare = createSafeIcon(RawCheckSquare, '☑️');
+const PenTool = createSafeIcon(RawPenTool, '✏️');
 
 interface CommandPaletteProps {
   visible: boolean;
@@ -296,8 +321,8 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     padding: 0,
-    outlineStyle: 'none',
-  } as any,
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : {}),
+  },
   closeBtn: {
     padding: 4,
   },

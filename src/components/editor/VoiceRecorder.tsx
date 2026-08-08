@@ -1,7 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Mic, Square, Play, Pause, Trash2, Check } from 'lucide-react';
+import {
+  Mic as RawMic,
+  Square as RawSquare,
+  Play as RawPlay,
+  Pause as RawPause,
+  Trash2 as RawTrash,
+  Check as RawCheck,
+} from 'lucide-react';
+import { createSafeIcon } from '../common/SafeIcon';
 import { ThemeColors } from '../../theme/colors';
+
+const Mic = createSafeIcon(RawMic, '🎙️');
+const Square = createSafeIcon(RawSquare, '⏹️');
+const Play = createSafeIcon(RawPlay, '▶️');
+const Pause = createSafeIcon(RawPause, '⏸️');
+const Trash2 = createSafeIcon(RawTrash, '🗑️');
+const Check = createSafeIcon(RawCheck, '✓');
 import { HapticsService } from '../../services/HapticsService';
 
 interface VoiceRecorderProps {

@@ -17,6 +17,7 @@ class StorageAdapter {
   private memoryStore: Map<string, string> = new Map();
   private _isReady: boolean = isWeb;
   private readyCallbacks: Array<() => void> = [];
+  private initPromise: Promise<void> | null = null;
 
   constructor() {
     if (isWeb) {
@@ -43,31 +44,39 @@ class StorageAdapter {
    * hydrated synchronously). Resolves once the cache is safe to read.
    */
   public async init(): Promise<void> {
-    if (isWeb) return;
-    try {
-      if (AsyncStorage && typeof AsyncStorage.getAllKeys === 'function') {
-        const keys = await AsyncStorage.getAllKeys();
-        if (keys && keys.length > 0) {
-          for (const key of keys) {
-            const value = await AsyncStorage.getItem(key);
-            if (value != null) {
-              this.memoryStore.set(key, value);
+    if (this._isReady) return;
+    if (this.initPromise) return this.initPromise;
+
+    this.initPromise = (async () => {
+      if (!isWeb) {
+        try {
+          if (AsyncStorage && typeof AsyncStorage.getAllKeys === 'function') {
+            const keys = await AsyncStorage.getAllKeys();
+            if (keys && keys.length > 0) {
+              for (const key of keys) {
+                const value = await AsyncStorage.getItem(key);
+                if (value != null) {
+                  this.memoryStore.set(key, value);
+                }
+              }
             }
           }
+        } catch (e) {
+          console.warn('Storage hydration failed:', e);
         }
       }
-    } catch (e) {
-      console.warn('Storage hydration failed:', e);
-    }
-    this._isReady = true;
-    this.readyCallbacks.forEach(cb => {
-      try {
-        cb();
-      } catch (e) {
-        console.warn('Storage ready callback error:', e);
-      }
-    });
-    this.readyCallbacks = [];
+      this._isReady = true;
+      this.readyCallbacks.forEach(cb => {
+        try {
+          cb();
+        } catch (e) {
+          console.warn('Storage ready callback error:', e);
+        }
+      });
+      this.readyCallbacks = [];
+    })();
+
+    return this.initPromise;
   }
 
   get isReady(): boolean {

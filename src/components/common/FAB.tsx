@@ -1,8 +1,21 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Plus, PenTool, CheckSquare, FolderPlus, X } from 'lucide-react';
+import {
+  Plus as RawPlus,
+  PenTool as RawPenTool,
+  CheckSquare as RawCheckSquare,
+  FolderPlus as RawFolderPlus,
+  X as RawX,
+} from 'lucide-react';
+import { createSafeIcon } from './SafeIcon';
 import { ThemeColors } from '../../theme/colors';
 import { HapticsService } from '../../services/HapticsService';
+
+const Plus = createSafeIcon(RawPlus, '➕');
+const PenTool = createSafeIcon(RawPenTool, '✏️');
+const CheckSquare = createSafeIcon(RawCheckSquare, '☑️');
+const FolderPlus = createSafeIcon(RawFolderPlus, '📁');
+const X = createSafeIcon(RawX, '✖️');
 
 interface FABProps {
   themeColors: ThemeColors;

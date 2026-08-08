@@ -1,8 +1,29 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Pin, Heart, Archive, Trash2, Folder, Clock, Tag as TagIcon, RotateCcw, BookOpen } from 'lucide-react';
+import {
+  Pin as RawPin,
+  Heart as RawHeart,
+  Archive as RawArchive,
+  Trash2 as RawTrash2,
+  Folder as RawFolder,
+  Clock as RawClock,
+  Tag as RawTag,
+  RotateCcw as RawRotate,
+  BookOpen as RawBook,
+} from 'lucide-react';
+import { createSafeIcon } from '../common/SafeIcon';
 import { Note, Folder as FolderType } from '../../types';
 import { ThemeColors } from '../../theme/colors';
+
+const Pin = createSafeIcon(RawPin, '📌');
+const Heart = createSafeIcon(RawHeart, '❤️');
+const Archive = createSafeIcon(RawArchive, '📦');
+const Trash2 = createSafeIcon(RawTrash2, '🗑️');
+const Folder = createSafeIcon(RawFolder, '📁');
+const Clock = createSafeIcon(RawClock, '🕒');
+const TagIcon = createSafeIcon(RawTag, '🏷️');
+const RotateCcw = createSafeIcon(RawRotate, '🔄');
+const BookOpen = createSafeIcon(RawBook, '📖');
 import { formatRelativeTime } from '../../utils/dateUtils';
 import { calculateStats } from '../../utils/textUtils';
 import { HapticsService } from '../../services/HapticsService';

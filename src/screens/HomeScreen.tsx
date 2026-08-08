@@ -1,8 +1,27 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { FileText, Pin, Trash2, Plus, Folder, Sparkles, Heart, Zap } from 'lucide-react';
+import {
+  FileText as RawFileText,
+  Pin as RawPin,
+  Trash2 as RawTrash,
+  Plus as RawPlus,
+  Folder as RawFolder,
+  Sparkles as RawSparkles,
+  Heart as RawHeart,
+  Zap as RawZap,
+} from 'lucide-react';
+import { createSafeIcon } from '../components/common/SafeIcon';
 import { Note, Folder as FolderType, SmartFilterType, ActiveScreen } from '../types';
 import { ThemeColors } from '../theme/colors';
+
+const FileText = createSafeIcon(RawFileText, '📄');
+const Pin = createSafeIcon(RawPin, '📌');
+const Trash2 = createSafeIcon(RawTrash, '🗑️');
+const Plus = createSafeIcon(RawPlus, '➕');
+const Folder = createSafeIcon(RawFolder, '📁');
+const Sparkles = createSafeIcon(RawSparkles, '✨');
+const Heart = createSafeIcon(RawHeart, '❤️');
+const Zap = createSafeIcon(RawZap, '⚡');
 import { NoteCard } from '../components/notes/NoteCard';
 import { NoteFilterBar } from '../components/notes/NoteFilterBar';
 import { NoteCardSkeleton } from '../components/common/Skeleton';

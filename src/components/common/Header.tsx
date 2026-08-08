@@ -1,8 +1,25 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import { Search as SearchIcon, Sparkles as SparklesIcon, Folder as FolderIcon, ShieldCheck as ShieldIcon, Sun as SunIcon, Grid as GridIcon, List as ListIcon } from 'lucide-react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Platform } from 'react-native';
+import {
+  Search as RawSearch,
+  Sparkles as RawSparkles,
+  Folder as RawFolder,
+  ShieldCheck as RawShield,
+  Sun as RawSun,
+  Grid as RawGrid,
+  List as RawList,
+} from 'lucide-react';
+import { createSafeIcon } from './SafeIcon';
 import { ThemeColors } from '../../theme/colors';
 import { ActiveScreen } from '../../types';
+
+const SearchIcon = createSafeIcon(RawSearch, '🔍');
+const SparklesIcon = createSafeIcon(RawSparkles, '✨');
+const FolderIcon = createSafeIcon(RawFolder, '📁');
+const ShieldIcon = createSafeIcon(RawShield, '🛡️');
+const SunIcon = createSafeIcon(RawSun, '☀️');
+const GridIcon = createSafeIcon(RawGrid, '🔲');
+const ListIcon = createSafeIcon(RawList, '☰');
 
 interface HeaderProps {
   themeColors: ThemeColors;
@@ -249,8 +266,8 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     padding: 0,
-    outlineStyle: 'none',
-  } as any,
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : {}),
+  },
   clearSearchBtn: {
     paddingHorizontal: 6,
     paddingVertical: 2,

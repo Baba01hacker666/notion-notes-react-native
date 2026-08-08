@@ -1,7 +1,20 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
-import { PenTool, Eraser, RotateCcw, Check, X } from 'lucide-react';
+import {
+  PenTool as RawPenTool,
+  Eraser as RawEraser,
+  RotateCcw as RawRotate,
+  Check as RawCheck,
+  X as RawX,
+} from 'lucide-react';
+import { createSafeIcon } from '../common/SafeIcon';
 import { ThemeColors } from '../../theme/colors';
+
+const PenTool = createSafeIcon(RawPenTool, '✏️');
+const Eraser = createSafeIcon(RawEraser, '🧹');
+const RotateCcw = createSafeIcon(RawRotate, '🔄');
+const Check = createSafeIcon(RawCheck, '✓');
+const X = createSafeIcon(RawX, '✖️');
 
 interface DrawingCanvasProps {
   themeColors: ThemeColors;

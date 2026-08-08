@@ -22,10 +22,29 @@ export default function App() {
   const [storageReady, setStorageReady] = useState<boolean>(mmkvStorage.isReady);
 
   useEffect(() => {
-    if (!storageReady) {
-      mmkvStorage.onReady(() => setStorageReady(true));
+    let isMounted = true;
+
+    // Timeout fallback: ensure app proceeds even if native storage hydration takes long
+    const timeoutId = setTimeout(() => {
+      if (isMounted) setStorageReady(true);
+    }, 2000);
+
+    if (!mmkvStorage.isReady) {
+      mmkvStorage.init().finally(() => {
+        if (isMounted) setStorageReady(true);
+      });
+      mmkvStorage.onReady(() => {
+        if (isMounted) setStorageReady(true);
+      });
+    } else {
+      setStorageReady(true);
     }
-  }, [storageReady]);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   if (!storageReady) {
     return <BootSplash />;

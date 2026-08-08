@@ -1,7 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { CheckCircle2, AlertCircle, Info } from 'lucide-react';
+import { CheckCircle2 as RawCheck, AlertCircle as RawAlert, Info as RawInfo } from 'lucide-react';
+import { createSafeIcon } from './SafeIcon';
 import { ThemeColors } from '../../theme/colors';
+
+const CheckCircle2 = createSafeIcon(RawCheck, '✅');
+const AlertCircle = createSafeIcon(RawAlert, '⚠️');
+const Info = createSafeIcon(RawInfo, 'ℹ️');
 
 interface ToastProps {
   message: string;

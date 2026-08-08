@@ -1,30 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import {
-  ArrowLeft,
-  Bold,
-  Italic,
-  List,
-  CheckSquare,
-  Code,
-  Quote,
-  Table as TableIcon,
-  Image as ImageIcon,
-  PenTool,
-  Mic,
-  Eye,
-  Edit3,
-  Folder as FolderIcon,
-  Tag as TagIcon,
-  Sparkles,
-  FileText,
-  Download,
-  Heart,
-  Pin,
-  Archive,
+  ArrowLeft as RawArrowLeft,
+  Bold as RawBold,
+  Italic as RawItalic,
+  List as RawList,
+  CheckSquare as RawCheckSquare,
+  Code as RawCode,
+  Quote as RawQuote,
+  Table as RawTable,
+  Image as RawImage,
+  PenTool as RawPenTool,
+  Mic as RawMic,
+  Eye as RawEye,
+  Edit3 as RawEdit3,
+  Folder as RawFolder,
+  Tag as RawTag,
+  Sparkles as RawSparkles,
+  FileText as RawFileText,
+  Download as RawDownload,
+  Heart as RawHeart,
+  Pin as RawPin,
+  Archive as RawArchive,
 } from 'lucide-react';
+import { createSafeIcon } from '../common/SafeIcon';
 import { Note, Folder, Tag } from '../../types';
 import { ThemeColors } from '../../theme/colors';
+
+const ArrowLeft = createSafeIcon(RawArrowLeft, '←');
+const Bold = createSafeIcon(RawBold, 'B');
+const Italic = createSafeIcon(RawItalic, 'I');
+const List = createSafeIcon(RawList, '•');
+const CheckSquare = createSafeIcon(RawCheckSquare, '☑');
+const Code = createSafeIcon(RawCode, '</>');
+const Quote = createSafeIcon(RawQuote, '“');
+const TableIcon = createSafeIcon(RawTable, '⊞');
+const ImageIcon = createSafeIcon(RawImage, '🖼');
+const PenTool = createSafeIcon(RawPenTool, '✏');
+const Mic = createSafeIcon(RawMic, '🎙');
+const Eye = createSafeIcon(RawEye, '👁');
+const Edit3 = createSafeIcon(RawEdit3, '📝');
+const FolderIcon = createSafeIcon(RawFolder, '📁');
+const TagIcon = createSafeIcon(RawTag, '🏷');
+const Sparkles = createSafeIcon(RawSparkles, '✨');
+const FileText = createSafeIcon(RawFileText, '📄');
+const Download = createSafeIcon(RawDownload, '📥');
+const Heart = createSafeIcon(RawHeart, '❤️');
+const Pin = createSafeIcon(RawPin, '📌');
+const Archive = createSafeIcon(RawArchive, '📦');
 import { DrawingCanvas } from './DrawingCanvas';
 import { VoiceRecorder } from './VoiceRecorder';
 import { MarkdownRenderer } from './MarkdownRenderer';
@@ -552,8 +575,8 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: -0.5,
     marginBottom: 12,
-    outlineStyle: 'none',
-  } as any,
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : {}),
+  },
   tagsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -597,16 +620,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     padding: 0,
     width: 80,
-    outlineStyle: 'none',
-  } as any,
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : {}),
+  },
   contentInput: {
     flex: 1,
     fontSize: 16,
     lineHeight: 24,
     minHeight: 400,
     fontFamily: 'Inter, sans-serif',
-    outlineStyle: 'none',
-  } as any,
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : {}),
+  },
   previewArea: {
     padding: 16,
     borderRadius: 12,

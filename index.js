@@ -5,5 +5,10 @@
  */
 import { AppRegistry } from 'react-native';
 import App from './src/App';
+import { initStorage } from './src/storage/MMKVStorage';
+
+// Kick off persistence hydration before first render on Android / iOS
+initStorage();
 
 AppRegistry.registerComponent('NotionNotes', () => App);
+

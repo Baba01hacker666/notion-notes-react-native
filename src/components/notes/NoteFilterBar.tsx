@@ -1,8 +1,21 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { Sparkles, Heart, Pin, Archive, Trash2 } from 'lucide-react';
+import {
+  Sparkles as RawSparkles,
+  Heart as RawHeart,
+  Pin as RawPin,
+  Archive as RawArchive,
+  Trash2 as RawTrash,
+} from 'lucide-react';
+import { createSafeIcon } from '../common/SafeIcon';
 import { SmartFilterType } from '../../types';
 import { ThemeColors } from '../../theme/colors';
+
+const Sparkles = createSafeIcon(RawSparkles, '✨');
+const Heart = createSafeIcon(RawHeart, '❤️');
+const Pin = createSafeIcon(RawPin, '📌');
+const Archive = createSafeIcon(RawArchive, '📦');
+const Trash2 = createSafeIcon(RawTrash, '🗑️');
 
 interface NoteFilterBarProps {
   themeColors: ThemeColors;
