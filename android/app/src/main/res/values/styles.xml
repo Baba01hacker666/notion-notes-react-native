@@ -2,6 +2,7 @@
 <resources>
     <!-- React Native requires Theme.AppCompat (or descendant) as base -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
         <item name="android:windowBackground">@android:color/black</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
